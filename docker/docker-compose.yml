@@ -1,0 +1,25 @@
+version: "3.9"
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/app
+      - VISION_BACKEND=opencv
+      - LLM_PROVIDER=mock
+      - DATABASE_URL=sqlite+aiosqlite:////tmp/maiia_data/investigations.db
+      - IMAGE_UPLOAD_DIR=/tmp/maiia_data/uploads
+      - FAISS_INDEX_PATH=/tmp/maiia_data/faiss_index
+    volumes:
+      - maiia_data:/tmp/maiia_data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  maiia_data:
